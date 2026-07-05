@@ -6,6 +6,7 @@ import client_http
 class FakeResponse:
     def __init__(self, status_code=200, data=None):
         self.status_code = status_code
+        self.ok = 200 <= status_code < 400
         self._data = data if data is not None else {}
 
     def json(self):

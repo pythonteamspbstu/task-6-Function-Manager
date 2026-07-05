@@ -101,14 +101,14 @@ def test_execute_function_missing_args_raises(manager):
 
 
 def test_execute_function_expression_error_raises(manager):
-    manager.create_function("bad", ["x"], ["y"], "x +")
+    manager.create_function("bad", ["x"], ["y"], "x / 0")
     with pytest.raises(ValueError, match="Execution error"):
         manager.execute_function("bad", {"x": 1})
 
 
 def test_execute_function_builtins_are_blocked(manager):
     manager.create_function("danger", [], ["y"], "open('x')")
-    with pytest.raises(ValueError, match="Execution error"):
+    with pytest.raises(ValueError, match="is not allowed"):
         manager.execute_function("danger", {})
 
 
