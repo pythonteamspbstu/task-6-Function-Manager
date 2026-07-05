@@ -57,5 +57,7 @@ class FunctionManager:
             result = eval(func['expression'], {"__builtins__": {}}, context)
             return result
         except Exception as e:
-            raise ValueError(f"Execution error: {str(e)}")
+            # Preserve the original exception as the cause so the underlying
+            # failure is not silently discarded.
+            raise ValueError(f"Execution error: {str(e)}") from e
 

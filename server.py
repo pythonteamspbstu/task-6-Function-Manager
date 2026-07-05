@@ -1,5 +1,6 @@
 import asyncio
 import json
+import traceback
 from contextlib import asynccontextmanager
 from typing import List, Dict, Any
 
@@ -33,6 +34,9 @@ async def handle_tcp_client(reader, writer):
             writer.write(f"{prompt}".encode())
             await writer.drain()
         data = await reader.readline()
+        if not data:
+            # Empty read means the peer closed the connection (EOF).
+            raise ConnectionResetError(f"Client {addr} disconnected")
         return data.decode().strip()
 
     try:
@@ -140,8 +144,13 @@ async def handle_tcp_client(reader, writer):
             else:
                 await send_msg("Invalid option.")
 
-    except Exception as e:
-        print(f"Connection error: {e}")
+    except (ConnectionResetError, BrokenPipeError, ConnectionError) as e:
+        print(f"TCP connection with {addr} closed: {e}")
+    except Exception:
+        # Log the full traceback instead of silently swallowing the error,
+        # so unexpected failures remain diagnosable.
+        print(f"Unexpected error while handling TCP client {addr}:")
+        traceback.print_exc()
     finally:
         print(f"Closing connection from {addr}")
         writer.close()
