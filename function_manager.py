@@ -1,5 +1,7 @@
 import math
 
+from utils import build_function_record
+
 class FunctionManager:
     def __init__(self):
         self.functions = {}
@@ -8,12 +10,7 @@ class FunctionManager:
         if name in self.functions:
             raise ValueError(f"Function '{name}' already exists.")
         
-        self.functions[name] = {
-            "name": name,
-            "inputs": inputs,
-            "outputs": outputs,
-            "expression": expression
-        }
+        self.functions[name] = build_function_record(name, inputs, outputs, expression)
         return self.functions[name]
 
     def get_function(self, name: str):
@@ -28,12 +25,7 @@ class FunctionManager:
         if name not in self.functions:
             raise ValueError(f"Function '{name}' does not exist.")
         
-        self.functions[name] = {
-            "name": name,
-            "inputs": inputs,
-            "outputs": outputs,
-            "expression": expression
-        }
+        self.functions[name] = build_function_record(name, inputs, outputs, expression)
         return self.functions[name]
 
     def delete_function(self, name: str):
