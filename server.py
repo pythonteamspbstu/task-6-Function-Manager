@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from typing import List, Dict, Any
 
 from fastapi import FastAPI, HTTPException, Body
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 
@@ -173,6 +174,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Function Manager API", lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:8000", "http://localhost:8000"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Content-Type"],
+)
+
 @app.post("/functions")
 async def create_function(func: FunctionCreate):
     try:
@@ -213,5 +221,5 @@ async def execute_function(name: str, payload: FunctionExecute):
         raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("server:app", host="127.0.0.1", port=8000)
 
