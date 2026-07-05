@@ -22,13 +22,20 @@ def main():
             print(data, end='')
 
             if data.endswith(': ') or 'Select option: ' in data:
-                user_input = input()
+                try:
+                    user_input = input()
+                except EOFError:
+                    print("\nInput closed. Exiting...")
+                    break
                 s.sendall((user_input + "\n").encode())
                 
                 if user_input.strip() == '7' and 'Select option: ' in data:
                     break
     except KeyboardInterrupt:
         print("\nExiting...")
+    except (ConnectionResetError, BrokenPipeError, OSError) as e:
+        print(f"\nConnection to server lost: {e}")
+        sys.exit(1)
     finally:
         s.close()
 
