@@ -8,6 +8,7 @@ from pydantic import BaseModel
 import uvicorn
 
 from function_manager import FunctionManager
+from utils import parse_csv_list
 
 class FunctionCreate(BaseModel):
     name: str
@@ -56,9 +57,9 @@ async def handle_tcp_client(reader, writer):
             if choice == '1':
                 name = await read_msg("Enter function name: ")
                 inputs_str = await read_msg("Enter inputs (comma separated, e.g. x,y): ")
-                inputs = [x.strip() for x in inputs_str.split(',') if x.strip()]
+                inputs = parse_csv_list(inputs_str, default=[])
                 outputs_str = await read_msg("Enter outputs (comma separated): ")
-                outputs = [x.strip() for x in outputs_str.split(',') if x.strip()]
+                outputs = parse_csv_list(outputs_str, default=[])
                 expression = await read_msg("Enter expression (e.g. x + y): ")
                 
                 try:
@@ -91,10 +92,10 @@ async def handle_tcp_client(reader, writer):
                     await send_msg("Function not found.")
                 else:
                     inputs_str = await read_msg(f"Enter new inputs [{','.join(func['inputs'])}]: ")
-                    inputs = [x.strip() for x in inputs_str.split(',')] if inputs_str else func['inputs']
+                    inputs = parse_csv_list(inputs_str, default=func['inputs'])
                     
                     outputs_str = await read_msg(f"Enter new outputs [{','.join(func['outputs'])}]: ")
-                    outputs = [x.strip() for x in outputs_str.split(',')] if outputs_str else func['outputs']
+                    outputs = parse_csv_list(outputs_str, default=func['outputs'])
                     
                     expression = await read_msg(f"Enter new expression [{func['expression']}]: ")
                     if not expression: expression = func['expression']
