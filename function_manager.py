@@ -144,7 +144,12 @@ def safe_eval(expression: str, variables: dict) -> object:
             f"Unsupported expression element: {type(node).__name__}"
         )
 
-    return _eval_node(tree)
+    try:
+        return _eval_node(tree)
+    except ValueError:
+        raise
+    except Exception as exc:
+        raise ValueError(f"Execution error: {exc}") from exc
 
 
 from utils import build_function_record
